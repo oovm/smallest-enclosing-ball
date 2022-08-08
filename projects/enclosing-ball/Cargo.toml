@@ -1,15 +1,15 @@
 [package]
-name = "sub_projects"
-publish = false
-version = "0.0.0"
+name = "smallest-enclosing-ball"
+version = "0.1.0"
 authors = ["Aster <192607617@qq.com>"]
 description = "..."
 repository = "..."
-readme = "Readme.md"
+readme = "readme.md"
 license = "MPL-2.0"
 edition = "2021"
 
 [dependencies]
+shape-core = "0.1.16"
 
 [dev-dependencies]
 
