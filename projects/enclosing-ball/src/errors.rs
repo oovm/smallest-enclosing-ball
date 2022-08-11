@@ -1,6 +1,6 @@
 #[derive(Debug, Copy, Clone)]
-pub enum Error {
-    UnknownError
+pub enum EnclosingError {
+    Insufficient { require: usize, points: usize },
 }
 
-pub type Result<T> = std::result::Result<T, Error>;
+pub type Result<T> = std::result::Result<T, EnclosingError>;

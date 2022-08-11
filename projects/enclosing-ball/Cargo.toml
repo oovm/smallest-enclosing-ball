@@ -9,7 +9,10 @@ license = "MPL-2.0"
 edition = "2021"
 
 [dependencies]
-shape-core = "0.1.16"
+
+[dependencies.shape-core]
+version = "0.1.16"
+path = 'C:\Users\Dell\CLionProjects\shape-rs\projects\shape-core'
 
 [dev-dependencies]
 
