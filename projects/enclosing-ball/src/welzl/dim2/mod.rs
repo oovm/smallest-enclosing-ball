@@ -1,7 +1,6 @@
-use crate::EnclosingError;
-use shape_core::{Circle, Point, Real};
+use shape_core::{Circle, EuclideanDistance, Point, Real, ShapeError};
 
-struct WelzlResolver2D<T> {
+pub(crate) struct WelzlResolver2D<T> {
     /// All points
     points: Vec<Point<T>>,
     /// boundary points
@@ -24,6 +23,7 @@ where
         let mut points = Vec::with_capacity(iter.size_hint().0);
         let mut k = 0;
         for point in iter {
+            // FIxME: The points may overlap, use hashmap?
             points.push(point);
             k += 1;
         }
@@ -32,67 +32,57 @@ where
     pub fn with_smallest_points(self, k: usize) -> Self {
         Self { k, ..self }
     }
-    pub fn resolve(mut self) -> Result<Circle<T>, EnclosingError> {
+    pub fn resolve(mut self) -> Result<Circle<T>, ShapeError> {
         if self.points.len() < self.k {
-            return Err(EnclosingError::Insufficient { require: self.k, points: self.points.len() });
+            return Err(ShapeError::insufficient_points(self.k, self.points.len()));
         }
         self.welzl_recursive()?;
         Ok(self.circle)
     }
 
-    fn welzl_recursive(&mut self) -> Result<(), EnclosingError> {
+    fn welzl_recursive(&mut self) -> Result<(), ShapeError> {
         if self.boundary.len() == self.k {
-            self.circle = self.min_circle_from_points(&self.boundary)?;
-            return Ok(());
+            self.min_circle_from_boundary()?;
         }
-        if self.points.is_empty() || self.boundary.len() + self.points.len() < self.k {
-            return Err(EnclosingError::Insufficient {
-                require: self.k - self.boundary.len(),
-                points: self.boundary.len() + self.points.len(),
-            });
-        }
-        let point = self.points.pop().unwrap();
-        self.welzl_recursive()?;
-        if !self.circle.contains(&point) {
-            self.boundary.push(point);
+        else {
+            let p = self.points.pop().unwrap();
             self.welzl_recursive()?;
-            self.boundary.pop();
-            self.points.push(point);
+            if !self.circle.contains(&p) {
+                self.boundary.push(p);
+                self.welzl_recursive()?;
+                self.boundary.pop();
+                self.points.push(p);
+            }
         }
         Ok(())
     }
-    fn min_circle_from_points(&self, points: &[Point<T>]) -> Result<Circle<T>, EnclosingError> {
-        match points.len() {
-            0 => Err(EnclosingError::Insufficient { require: 1, points: 0 }),
-            1 => Ok(Circle::from_1_points(&points[0])),
-            2 => Ok(Circle::from_2_points(&points[0], &points[1])),
-            3 => Ok(Circle::from_3_points(&points[0], &points[1], &points[2])),
+
+    fn min_circle_from_boundary(&mut self) -> Result<(), ShapeError> {
+        match self.boundary.as_mut_slice() {
+            [] => Err(ShapeError::insufficient_points(1, 0))?,
+            [p1] => {
+                self.circle.center = p1.clone();
+            }
+            [p1, p2] => {
+                self.circle = Circle::from_2_points(p1, p2);
+            }
+            [p1, p2, p3] => {
+                self.circle = Circle::from_3_points(p1, p2, p3);
+            }
             _ => {
-                let mut circle = Circle::from_2_points(&points[0], &points[1]);
-                for i in 2..points.len() {
-                    if !circle.contains(&points[i]) {
-                        circle = Circle::from_2_points(&points[0], &points[i]);
-                        for j in 1..i {
-                            if !circle.contains(&points[j]) {
-                                circle = Circle::from_2_points(&points[i], &points[j]);
-                                for k in 0..j {
-                                    if !circle.contains(&points[k]) {
-                                        circle = Circle::from_3_points(&points[i], &points[j], &points[k]);
-                                    }
-                                }
-                            }
-                        }
+                let mut points = self.boundary.clone();
+                let mut center = points.pop().unwrap();
+                let radius = T::zero();
+                while !points.is_empty() {
+                    let p = points.pop().unwrap();
+                    let d = center.euclidean_distance(&p);
+                    if d > radius {
+                        self.circle.radius = d;
+                        self.circle.center = p;
                     }
                 }
-                Ok(circle)
             }
         }
+        Ok(())
     }
-}
-
-#[test]
-fn main() {
-    let points = vec![Point { x: 0.0, y: 0.0 }, Point { x: 1.0, y: 0.0 }, Point { x: 0.5, y: 0.5 }, Point { x: 0.0, y: 1.0 }];
-    let circle = WelzlResolver2D::new(points).resolve().unwrap();
-    println!("Center: ({}, {}), Radius: {}", circle.center.x, circle.center.y, circle.radius);
 }
