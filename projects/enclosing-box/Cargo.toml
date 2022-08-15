@@ -1,10 +1,10 @@
 [package]
-name = "smallest-enclosing-ball"
-version = "0.1.1"
+name = "smallest-enclosing-box"
+version = "0.0.0"
 authors = ["Aster <192607617@qq.com>"]
 description = "Calculate the smallest enclosing circle or sphere of a shape"
-repository = "https://github.com/oovm/smallest-enclosing-ball/tree/dev/projects/enclosing-ball"
-documentation = "https://docs.rs/smallest-enclosing-ball"
+repository = "https://github.com/oovm/smallest-enclosing-ball/tree/dev/projects/enclosing-box"
+documentation = "https://docs.rs/smallest-enclosing-box"
 readme = "readme.md"
 license = "MPL-2.0"
 edition = "2021"
