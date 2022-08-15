@@ -11,6 +11,7 @@ pub(crate) struct WelzlResolver2D<T> {
     k: usize,
 }
 
+#[allow(dead_code)]
 impl<T> WelzlResolver2D<T>
 where
     T: Real,
@@ -71,7 +72,7 @@ where
             }
             _ => {
                 let mut points = self.boundary.clone();
-                let mut center = points.pop().unwrap();
+                let center = points.pop().unwrap();
                 let radius = T::zero();
                 while !points.is_empty() {
                     let p = points.pop().unwrap();

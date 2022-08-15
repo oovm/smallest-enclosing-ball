@@ -1,5 +1,5 @@
 use crate::{welzl::dim2::WelzlResolver2D, EnclosingCircle};
-use shape_core::{Circle, Line, Point, PointSet, Real, Shape2D, ShapeError, Square, Triangle};
+use shape_core::{Circle, Line, Point, PointSet, Real, ShapeError, Square, Triangle};
 
 impl<T> EnclosingCircle<T> for PointSet<T>
 where
@@ -23,9 +23,10 @@ where
     }
 
     fn enclosing_k(&self, k: usize) -> Result<Circle<T>, ShapeError> {
-        WelzlResolver2D::new(vec![self.s, self.e]).with_smallest_points(k).resolve()
+        unreachable!("Unable to sample `{k}` points on an abstract shape.")
     }
 }
+
 impl<T> EnclosingCircle<T> for Triangle<T>
 where
     T: Real,
@@ -35,7 +36,7 @@ where
     }
 
     fn enclosing_k(&self, k: usize) -> Result<Circle<T>, ShapeError> {
-        WelzlResolver2D::new(vec![self.a, self.b, self.c]).with_smallest_points(k).resolve()
+        unreachable!("Unable to sample `{k}` points on an abstract shape.")
     }
 }
 
@@ -54,13 +55,6 @@ where
     }
 
     fn enclosing_k(&self, k: usize) -> Result<Circle<T>, ShapeError> {
-        WelzlResolver2D::new(vec![
-            Point { x: self.x.clone(), y: self.y.clone() },
-            Point { x: self.x.clone() + self.s.clone(), y: self.y.clone() },
-            Point { x: self.x.clone() + self.s.clone(), y: self.y.clone() + self.s.clone() },
-            Point { x: self.x.clone(), y: self.y.clone() + self.s.clone() },
-        ])
-        .with_smallest_points(k)
-        .resolve()
+        unreachable!("Unable to sample `{k}` points on an abstract shape.")
     }
 }

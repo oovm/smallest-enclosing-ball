@@ -1,5 +1,4 @@
 use shape_core::{Ball, Circle, ShapeError};
-use std::error::Error;
 
 pub mod dim2;
 pub mod dim3;

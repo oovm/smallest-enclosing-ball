@@ -1,4 +1,4 @@
-use shape_core::{Line, Point3D, Triangle};
+use shape_core::{Line, Triangle};
 use smallest_enclosing_ball::EnclosingCircle;
 
 #[test]
